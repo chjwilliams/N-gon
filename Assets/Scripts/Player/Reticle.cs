@@ -3,7 +3,7 @@ using System.Collections;
 
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
-/*	PlayerControls: Handles player state in N-gon										*/
+/*	Reticle: Handles reticle rotation around player						        		*/
 /*			Functions:																	*/
 /*					public:																*/
 /*																						*/

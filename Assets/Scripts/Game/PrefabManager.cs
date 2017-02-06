@@ -11,6 +11,8 @@ public class PrefabManager : MonoBehaviour
 	//	Public Variables
 	public GameObject playerPrefab;						//	Reference to player prefab
 	public GameObject bulletPrefab;						//	Reference to bullet prefab
+    public GameObject trianglePrefab;                   //  Reference to triangle prefab
+    public GameObject squarePrefab;                     //  Reference to square prefab
 
 	//Private Static Variabels
 	private static PrefabManager m_Instance = null;		//	temporary variable to store instances

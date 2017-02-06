@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /*
- * 		TODO: 
- * 				Standardize code commenting
+ * 		TODO:     Multiple Enemy types!
+ *                Use the subclass sandbox pattern to implement two different enemy types.
+ *                These enemies need to be differentiated by:
+ *                    Ship Graphics: Each enemy type should use a distinct ship graphic.
+ *                    Movement: Each enemy type should have distinct movement
+ *                                (e.g. different speed, acceleration, movement patterns like moving in a zig-zag pattern, etc.).
+ *                Audio: Each enemy type should play different sounds when they are created and destroyed.
+ * 			      Standardize code commenting
  */ 
 
 /*--------------------------------------------------------------------------------------*/
@@ -19,7 +26,7 @@ using System.Collections;
 /*						void Update ()													*/
 /*																						*/
 /*--------------------------------------------------------------------------------------*/
-using System.Collections.Generic;
+
 
 
 public class PlayerControls : MonoBehaviour 
@@ -66,6 +73,7 @@ public class PlayerControls : MonoBehaviour
 	/*--------------------------------------------------------------------------------------*/
 	private void Shoot ()
 	{
+		//	Shakes camera when 
 		CameraShake.cameraShakeEffect.Shake (0.1f, 0.25f);
 
 		//	Creates a new bullet from prefab using the position of the muzzle and rotation of the reticle
@@ -79,9 +87,12 @@ public class PlayerControls : MonoBehaviour
 		adjustBullettrajectory.Rotate (0.0f, 0.0f, 90.0f);
 		float theta = adjustBullettrajectory.rotation.eulerAngles.z;
 
+		//	Moves bullet in appropriate direction
 		newBullet.dy = Mathf.Sin (theta.toRadians());
 		newBullet.dx = Mathf.Cos (theta.toRadians());
 
+
+		//	A list so we can keep track of the bullets
 		_BulletList.Add (newBullet);
 	}
 	
