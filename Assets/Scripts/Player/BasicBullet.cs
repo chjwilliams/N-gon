@@ -62,7 +62,7 @@ public class BasicBullet : MonoBehaviour
 			Physics2D.IgnoreCollision (GetComponent<BoxCollider2D>(), _Player.GetComponent<CircleCollider2D> ());
 		}
 
-		if (other.gameObject.tag == "Boundary")
+		if (other.gameObject.tag == "Boundary" || other.gameObject.tag == "Enemy")
 		{
 			Destroy (gameObject);
 		}

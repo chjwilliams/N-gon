@@ -2,49 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-        TODO: Audio: Each enemy type should play different sounds when they are created and destroyed.
-                Add audio source to BasicEnemyControls.cs
-                Import sounds 4 sounds.
-
-/*
-
 /*--------------------------------------------------------------------------------------*/
-/*																						*/
-/*	GameManager: As of now, just spawns enemies        									*/
+/*  [SUBCLASS] Extends BasicEnemyControls.cs											*/
+/*	Square: Square enemy logic			                    	    			    	*/
 /*			Functions:																	*/
 /*					public:																*/
-/*						                        										*/
-/*					proteceted:															*/
-/*                                                                                      */
+/*						override void Update ()											*/
+/*						override void Start ()						        			*/
 /*					private:															*/
-/*						void Start ()													*/
-/*						void Update ()													*/
 /*																						*/
 /*--------------------------------------------------------------------------------------*/
-public class GameManager : MonoBehaviour
+public class Square : BasicEnemyControls
 {
-    //  Static variables
-    public static GameManager instance;                //   The current Game Manager  
-    
+    public PlayerControls player;        //   Reference to player for Square subclass
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
     /*	Start: Runs once at the begining of the game. Initalizes variables.					*/
     /*																						*/
     /*--------------------------------------------------------------------------------------*/
-    private void Start ()
-	{
-        
-	}
-	
+    override public void Start ()
+    {
+        //    Runs base class's Start function
+        base.Start ();
+        player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerControls> ();
+    }
+
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
     /*	Update: Called once per frame														*/
+    /*		This Update function is used instead of the base class's						*/
     /*																						*/
     /*--------------------------------------------------------------------------------------*/
-    void Update ()
-	{
-		
-	}
+    override public void Update ()
+    {
+        FollowTarget (player.transform);
+        SurroundTarget (player.transform);
+        SinWaveMovement ();
+    }
 }
