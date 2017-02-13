@@ -60,6 +60,11 @@ public class EnemyWaveManager : MonoBehaviour
 		StartCoroutine(SpawnWave());
 	}
 
+	/*--------------------------------------------------------------------------------------*/
+    /*																						*/
+    /*	SpawnWave: spawns enemies based on active wave										*/
+    /*																						*/
+    /*--------------------------------------------------------------------------------------*/
 	private IEnumerator SpawnWave()
 	{
 		
@@ -109,6 +114,12 @@ public class EnemyWaveManager : MonoBehaviour
 
 	}
 
+	/*--------------------------------------------------------------------------------------*/
+    /*																						*/
+    /*	EnemyToDestroy: Puts dead enemy in list to be destroyed later						*/
+    /*		param: BasicEnemyControls enemy - the enemy to be destroyed						*/
+	/*																						*/
+    /*--------------------------------------------------------------------------------------*/
 	public void EnemyToDestroy (BasicEnemyControls enemy)
 	{
 		enemy.GetComponent<Collider2D>().enabled = false;
@@ -118,6 +129,12 @@ public class EnemyWaveManager : MonoBehaviour
 		currentWave.Remove(enemy);
 	}
 
+	/*--------------------------------------------------------------------------------------*/
+    /*																						*/
+    /*	DestroyEnemies: Destroys dead enemy gameobjects										*/
+    /*		param: List <BasicEnemyControls> deadEnemies - all the dead enemies				*/
+	/*																						*/
+    /*--------------------------------------------------------------------------------------*/
 	private void DestroyEnemies(List<BasicEnemyControls> deadEnemies)
 	{
 		for (int i = 0; i < deadEnemies.Count; i++)

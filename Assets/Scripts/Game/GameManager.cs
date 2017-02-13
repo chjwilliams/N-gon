@@ -11,7 +11,7 @@ using UnityEngine;
 
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
-/*	GameManager: As of now, just spawns enemies        									*/
+/*	GameManager: TBD                                  									*/
 /*			Functions:																	*/
 /*					public:																*/
 /*						                        										*/
@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 {
     //  Static variables
     public static GameManager instance;                //   The current Game Manager  
-    
+
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
