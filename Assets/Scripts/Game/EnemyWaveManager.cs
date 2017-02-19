@@ -1,165 +1,116 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SimpleManager;
+using Enemy;
 
-/*--------------------------------------------------------------------------------------*/
-/*																						*/
-/*	EnemyWaveManager: Spawns waves of Enemies			   								*/
-/*			Functions:																	*/
-/*					public:																*/
-/*						void EnemyToDestroy (BasicEnemyControls enemy)     				*/
-/*					proteceted:															*/
-/*                                                                                      */
-/*					private:															*/
-/*						void Start ()													*/
-/*						IEnumerator SpawnWave(bool waveAIsActive)						*/
-/*						void DestroyEnemies(List<BasicEnemyControls> deadEnemies)	    */
-/*						void Update ()													*/
-/*																						*/
-/*--------------------------------------------------------------------------------------*/
-public class EnemyWaveManager : MonoBehaviour 
+namespace EnemyWaveManager_ 
 {
-	//	Static Variables
-	public static EnemyWaveManager instance;						//	Instance of the EnemyWaveManager
+ public class EnemyWaveManager : Manager<BasicEnemyControls>
+{
+        public const string TRIANGLE_PREFAB = "Triangle";
+		public const string SQUARE_PREFAB = "Square";
 
-	//	Public Variables
-	public int maxNumberOfEnemiesInWave = 10;						//	Max number of enemies in a wave
-	public List<BasicEnemyControls> currentWave;					//	Reference to current wave
+        public GameObject[] spawnPoints;
+		
+        public Dictionary<string, GameObject> enemyPrefabs;
+        
+        private GameObject thisEnemy;
+        private static readonly Array EnemyTypes = Enum.GetValues(typeof(EnemyType));
+        private readonly System.Random _rng = new System.Random();
 
-	//	Private Variables
-	[SerializeField]
-	private bool _WaveAIsActive;									//	Toggles which wave is active
-	private List<BasicEnemyControls> _EnemiesToDelete;				//	List for enemies to delete
-	private List<BasicEnemyControls> _EnemyWaveA;					//	Enemies in wave A
-	private List<BasicEnemyControls> _EnemyWaveB;					//	Enemies in wave B
-
-	/*--------------------------------------------------------------------------------------*/
-    /*																						*/
-    /*	Start: Runs once at the begining of the game. Initalizes variables.					*/
-    /*																						*/
-    /*--------------------------------------------------------------------------------------*/
-	private void Start () 
-	{
-		if (instance == null)
+		public void PopulateDictionary()
 		{
-			instance = GetComponent<EnemyWaveManager>();
-		}
-		else
-		{
-			Destroy(this.gameObject);
+            enemyPrefabs = new Dictionary<string, GameObject> ();
+			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + "Triangle");
+			enemyPrefabs.Add(TRIANGLE_PREFAB,thisEnemy);
+            thisEnemy =  null;
+			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + SQUARE_PREFAB);
+			enemyPrefabs.Add(SQUARE_PREFAB, thisEnemy);
 		}
 
-		_EnemiesToDelete = new List<BasicEnemyControls>();
-		_EnemyWaveA = new List<BasicEnemyControls>();
-		_EnemyWaveB = new List<BasicEnemyControls>();
-		currentWave = new List<BasicEnemyControls>();
+        public static bool ListIsEmpty()
+        {
+            return ManagedObjects.Count == 0? true: false;
+        }
 
-		_WaveAIsActive = true;
-		
-		currentWave = _EnemyWaveA;
-		StartCoroutine(SpawnWave());
-	}
+        public void PopulateSpawnPoints()
+        {
+            spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint"); 
+        }
 
-	/*--------------------------------------------------------------------------------------*/
-    /*																						*/
-    /*	SpawnWave: spawns enemies based on active wave										*/
-    /*																						*/
-    /*--------------------------------------------------------------------------------------*/
-	private IEnumerator SpawnWave()
-	{
-		
-		yield return new WaitForSeconds(4.0f);
-		if (_WaveAIsActive)
+        public override BasicEnemyControls Create()
+        {
+            BasicEnemyControls enemy = Init(GetRandomEnemyType());
+            
+            ManagedObjects.Add(enemy);
+            enemy.OnCreated();
+            return enemy;
+        }
+
+		public BasicEnemyControls Init(EnemyType enemyType)
 		{
-			currentWave = _EnemyWaveA;
-			for (int i = 0; i < maxNumberOfEnemiesInWave; i++)
+			GameObject newEnemy = MonoBehaviour.Instantiate(enemyPrefabs[enemyType.ToString()], spawnPoints[_rng.Next() % spawnPoints.Length].transform.position, Quaternion.identity) as GameObject;
+			BasicEnemyControls enemy = new BasicEnemyControls();
+			switch (enemyType.ToString())
 			{
-				if (_EnemyWaveA.Count < maxNumberOfEnemiesInWave)
-				{
-					
-					GameObject newEnemy = Instantiate (PrefabManager.Instance.trianglePrefab, new Vector3 (i - 2.0f , i , 0), Quaternion.identity);
+				case TRIANGLE_PREFAB:
 	    			newEnemy.AddComponent <Triangle> ();
-
-					BasicEnemyControls enemy = newEnemy.GetComponent <Triangle> ();
-
-	    			enemy.sides = 3;
-	    			enemy.moveSpeed = 5.0f;
-				
-					_EnemyWaveA.Add(enemy);
-				}
-			}
-			
-		}
-		else
-		{
-			currentWave = _EnemyWaveB;
-			for (int i = 0; i < maxNumberOfEnemiesInWave; i++)
-			{
-				if (_EnemyWaveB.Count < maxNumberOfEnemiesInWave)
-				{
-					GameObject newEnemy = Instantiate (PrefabManager.Instance.squarePrefab, new Vector3 (i - 2.0f , i , 0), Quaternion.identity);
-	    			newEnemy.AddComponent <Square> ();
-
-					BasicEnemyControls enemy = newEnemy.GetComponent <Square> ();
-
-	    			enemy.sides = 4;
-	    			enemy.moveSpeed = 5.0f;
-				
-					_EnemyWaveB.Add(enemy);
-				}
+					enemy = newEnemy.GetComponent <Triangle> ();
+					break;
+				case SQUARE_PREFAB:
+					newEnemy.AddComponent <Square> ();
+					enemy = newEnemy.GetComponent <Square> ();
+					break;
 			}
 
-			
+			return enemy;
 		}
 
-	}
+        public override void Destroy(BasicEnemyControls enemy)
+        {
+            Debug.Log("Before Removing: " + ManagedObjects.Count);
+            ManagedObjects.Remove(enemy);
+            Debug.Log("After Removing: " + ManagedObjects.Count);
+            enemy.GetComponent<SpriteRenderer>().color = new Color (0, 0, 0, 0);
+            enemy.OnDestroyed();
+        }
 
-	/*--------------------------------------------------------------------------------------*/
-    /*																						*/
-    /*	EnemyToDestroy: Puts dead enemy in list to be destroyed later						*/
-    /*		param: BasicEnemyControls enemy - the enemy to be destroyed						*/
-	/*																						*/
-    /*--------------------------------------------------------------------------------------*/
-	public void EnemyToDestroy (BasicEnemyControls enemy)
-	{
-		enemy.GetComponent<Collider2D>().enabled = false;
-		enemy.GetComponent<SpriteRenderer>().color = new Color (0.0f, 0.0f, 0.0f, 0.0f);
-		_EnemiesToDelete.Add(enemy);
+        public List<BasicEnemyControls> Create(uint n)
+        {
+            List<BasicEnemyControls> enemy = new List<BasicEnemyControls>();
+            for (var i = 0; i < n; i++)
+            {
+                enemy.Add(Create());
+            }
+            return enemy;
+        }
 
-		currentWave.Remove(enemy);
-	}
+        private EnemyType GetRandomEnemyType()
+        {
+            return (EnemyType)(_rng.Next() % enemyPrefabs.Count);
+        }
 
-	/*--------------------------------------------------------------------------------------*/
-    /*																						*/
-    /*	DestroyEnemies: Destroys dead enemy gameobjects										*/
-    /*		param: List <BasicEnemyControls> deadEnemies - all the dead enemies				*/
-	/*																						*/
-    /*--------------------------------------------------------------------------------------*/
-	private void DestroyEnemies(List<BasicEnemyControls> deadEnemies)
-	{
-		for (int i = 0; i < deadEnemies.Count; i++)
-		{
-			Destroy(deadEnemies[i].gameObject);
-			_EnemiesToDelete.Remove(deadEnemies[i]);
-		}
-	}
-	
-	/*--------------------------------------------------------------------------------------*/
-    /*																						*/
-    /*	Update: Called once per frame														*/
-    /*																						*/
-    /*--------------------------------------------------------------------------------------*/
-	void Update () 
-	{
-		if (currentWave.Count == 0)
-		{
-			_WaveAIsActive = !_WaveAIsActive;
-			StartCoroutine(SpawnWave());
-		}
+        public void DestroyAllWithType(EnemyType et)
+        {
+            foreach (var e in FindAll(e => e.EnemyTypes == et))
+            {
+                Destroy(e);
+            }
+        }
 
-		if (_EnemiesToDelete.Count > 0)
-		{
-			DestroyEnemies (_EnemiesToDelete);
-		}
-	}
+        public int NumWithType(EnemyType et)
+        {
+            return FindAll(e => e.EnemyTypes == et).Count;
+        }
+
+        public void PrintCounts()
+        {
+            foreach (EnemyType et in EnemyTypes)
+            {
+                Console.WriteLine("There are {0} {1} gems", NumWithType(et), et);
+            }
+        }
+   }
 }

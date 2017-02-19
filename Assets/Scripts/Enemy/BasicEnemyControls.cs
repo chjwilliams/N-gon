@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine.Networking;
+using SimpleManager;
+using EnemyWaveManager_;
 
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
@@ -21,8 +23,19 @@ using UnityEngine.Networking;
 /*						Square ()									    				*/
 /*																						*/
 /*--------------------------------------------------------------------------------------*/
-public class BasicEnemyControls : MonoBehaviour
+
+namespace Enemy 
 {
+ public enum EnemyType
+{
+        Triangle,
+        Square
+}
+public class BasicEnemyControls : MonoBehaviour, IManaged
+{
+
+    public EnemyType EnemyTypes {get; private set;}
+
     //    Public Variables
     public int sides;                            //    Refernece to number of sides enemy has
     public float moveSpeed;                      //    Movement speed of enemy
@@ -38,6 +51,7 @@ public class BasicEnemyControls : MonoBehaviour
     private AudioSource _AudioSource;            //    Refernce to gameobject's audio source
     private Animator _Animator;                  //    Reference to Enemy's animator
     private Rigidbody2D _Rigidbody2D;            //    Reference to Rigidbody2D
+    private EnemyWaveManager _MyManager;
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
@@ -67,13 +81,23 @@ public class BasicEnemyControls : MonoBehaviour
         _AudioSource = GetComponent <AudioSource> ();
         _Animator = GetComponent <Animator> ();
         _Rigidbody2D = GetComponent <Rigidbody2D> ();
+        _MyManager = GameObject.Find("EnemyManager").GetComponent<EnemyWaveManager>();
     }
+
+    public virtual void Init(EnemyType enemy) 
+    {   
+        
+    }
+
+    public virtual void OnCreated() {}
+
+    public virtual void OnDestroyed() { Destroy(gameObject, 1.0f);}
 
     protected void FollowTarget (Transform target)
     {
-        _Position = transform.position;
-        _Position = Vector3.Lerp (_Position, target.position, Time.deltaTime);
-        transform.position = _Position;
+        _Position = transform.localPosition;
+        _Position = Vector3.Lerp (_Position, target.localPosition, Time.deltaTime);
+        transform.localPosition = _Position;
     }
 
     protected void SurroundTarget (Transform target)
@@ -133,7 +157,8 @@ public class BasicEnemyControls : MonoBehaviour
         if (other.gameObject.CompareTag ("Bullet"))
         {
             moveSpeed = 40.0f;
-            EnemyWaveManager.instance.EnemyToDestroy(this);
+            _MyManager.Destroy(this);
         }
     }
+}
 }

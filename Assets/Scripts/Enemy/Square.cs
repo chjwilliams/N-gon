@@ -12,6 +12,8 @@ using UnityEngine;
 /*					private:															*/
 /*																						*/
 /*--------------------------------------------------------------------------------------*/
+namespace Enemy 
+{
 public class Square : BasicEnemyControls
 {
     public PlayerControls player;        //   Reference to player for Square subclass
@@ -23,6 +25,7 @@ public class Square : BasicEnemyControls
     /*--------------------------------------------------------------------------------------*/
     override public void Start ()
     {
+         moveSpeed = 7.0f;
         //    Runs base class's Start function
         base.Start ();
         player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerControls> ();
@@ -36,8 +39,9 @@ public class Square : BasicEnemyControls
     /*--------------------------------------------------------------------------------------*/
     override public void Update ()
     {
+        SurroundTarget (player.transform);        
         FollowTarget (player.transform);
-        SurroundTarget (player.transform);
         SinWaveMovement ();
     }
+}
 }

@@ -13,6 +13,8 @@ using UnityEngine;
 /*						IEnumerator ChangeDirection ()									*/
 /*																						*/
 /*--------------------------------------------------------------------------------------*/
+namespace Enemy 
+{
 public class Triangle : BasicEnemyControls
 {
     public PlayerControls player;        //   Reference to player for Square subclass
@@ -41,4 +43,5 @@ public class Triangle : BasicEnemyControls
       SinWaveMovement ();
       FollowTarget(player.transform);
     }
+}
 }
