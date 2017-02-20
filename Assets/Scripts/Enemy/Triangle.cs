@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*--------------------------------------------------------------------------------------*/
-/*  [SUBCLASS] Extends BasicEnemyControls.cs											*/
+/*  [SUBCLASS] Extends BasicEnemy.cs											*/
 /*	Triangle: Triangle enemy logic			                    	    				*/
 /*			Functions:																	*/
 /*					public:																*/
@@ -15,7 +15,7 @@ using UnityEngine;
 /*--------------------------------------------------------------------------------------*/
 namespace Enemy 
 {
-public class Triangle : BasicEnemyControls
+public class Triangle : BasicEnemy
 {
     public PlayerControls player;        //   Reference to player for Square subclass
 

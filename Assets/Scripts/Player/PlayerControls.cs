@@ -1,17 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
-/*
- * 		TODO:     Multiple Enemy types!
- *                Use the subclass sandbox pattern to implement two different enemy types.
- *                These enemies need to be differentiated by:
- *                    Ship Graphics: Each enemy type should use a distinct ship graphic.
- *                    Movement: Each enemy type should have distinct movement
- *                                (e.g. different speed, acceleration, movement patterns like moving in a zig-zag pattern, etc.).
- *                Audio: Each enemy type should play different sounds when they are created and destroyed.
- * 			      Standardize code commenting
- */ 
+using GameEventManager;
+using GameEvents;
 
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
@@ -39,6 +30,8 @@ public class PlayerControls : MonoBehaviour
 	private GameObject _Reticle;					//	Shows were the player is aiming
 	private Transform _Muzzle;						//	Where the bullets spawn from
 	private List <BasicBullet> _BulletList;			//	Reference to Basic Bullet Script
+	private EnemyWaveDestroyedEvent.Handler onEnemyWaveDestroyed;
+	private const string ENEMY_WAVE_DESTROYED = "EnemyWaveDestroyed";
 
 	/*--------------------------------------------------------------------------------------*/
 	/*																						*/
@@ -51,6 +44,25 @@ public class PlayerControls : MonoBehaviour
 		_Reticle = GameObject.FindGameObjectWithTag ("Reticle");
 		_BulletList = new List<BasicBullet> ();
 		_Muzzle = GameObject.FindGameObjectWithTag ("Muzzle").transform;
+		
+		onEnemyWaveDestroyed = new EnemyWaveDestroyedEvent.Handler(OnEnemyWaveDestroyed);
+		EventManager.Instance.Register<EnemyWaveDestroyedEvent>(onEnemyWaveDestroyed);
+	}
+
+	protected virtual void OnPlayerIsDead()
+	{
+
+	}
+
+	
+	public void OnEnemyWaveDestroyed(GameEvent e)
+	{
+        GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.2f, 0.3f);
+	}
+
+	public void OnEnemyIsDead(GameEvent e)
+	{
+		GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.5f);
 	}
 
 	/*--------------------------------------------------------------------------------------*/

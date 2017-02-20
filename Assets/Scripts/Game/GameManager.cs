@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SimpleManager;
-using EnemyWaveManager_;
+using EnemyWaveSpawner;
+using GameEventManager;
+using GameEvents;
 
 /*
         TODO: Audio: Each enemy type should play different sounds when they are created and destroyed.
@@ -30,6 +32,8 @@ public class GameManager : MonoBehaviour
     //  Static variables
     public static GameManager instance;                //   The current Game Manager  
     public EnemyWaveManager enemyWaveManager;
+    private EnemyWaveDestroyedEvent.Handler onEnemyWaveDestroyed;
+	private const string ENEMY_WAVE_DESTROYED = "EnemyWaveDestroyed";
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
@@ -41,6 +45,8 @@ public class GameManager : MonoBehaviour
         enemyWaveManager = new EnemyWaveManager();
         enemyWaveManager.PopulateSpawnPoints();
         enemyWaveManager.PopulateDictionary();
+        onEnemyWaveDestroyed = new EnemyWaveDestroyedEvent.Handler(OnEnemyWaveDestroyed);
+		EventManager.Instance.Register<EnemyWaveDestroyedEvent>(onEnemyWaveDestroyed);
 	}
 
     private void Start()
@@ -48,11 +54,10 @@ public class GameManager : MonoBehaviour
         enemyWaveManager.Create(5);
     }
 	
-    IEnumerator SpawnNewWave()
-    {
-        yield return new WaitForSeconds(3.0f);
-        
-    }
+    public void OnEnemyWaveDestroyed(GameEvent e)
+	{
+        enemyWaveManager.Create(5);
+	}
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
@@ -61,9 +66,6 @@ public class GameManager : MonoBehaviour
     /*--------------------------------------------------------------------------------------*/
     void Update ()
 	{
-		if (EnemyWaveManager.ListIsEmpty())
-        {
-            enemyWaveManager.Create(5);
-        }
+		
 	}
 }

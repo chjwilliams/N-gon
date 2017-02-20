@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameEventManager;
+using GameEvents;
 
 /*--------------------------------------------------------------------------------------*/
-/*  [SUBCLASS] Extends BasicEnemy.cs											*/
+/*  [SUBCLASS] Extends BasicEnemy.cs						        					*/
 /*	Square: Square enemy logic			                    	    			    	*/
 /*			Functions:																	*/
 /*					public:																*/
@@ -14,9 +16,11 @@ using UnityEngine;
 /*--------------------------------------------------------------------------------------*/
 namespace Enemy 
 {
-public class Square : BasicEnemy
+public class Pentagon : BasicEnemy
 {
     public PlayerControls player;        //   Reference to player for Square subclass
+    private EnemyDiedEvent.Handler onEnemyDied;
+	private const string ENEMY_DIED = "EnemyDied";
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
@@ -25,11 +29,27 @@ public class Square : BasicEnemy
     /*--------------------------------------------------------------------------------------*/
     override public void Start ()
     {
-         moveSpeed = 7.0f;
+        moveSpeed = 0.0f;
         //    Runs base class's Start function
         base.Start ();
         player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerControls> ();
+
+        onEnemyDied = new EnemyDiedEvent.Handler(OnEnemyDied);
+		EventManager.Instance.Register<EnemyDiedEvent>(onEnemyDied);
     }
+    override public void OnDestroyed()
+    {
+        EventManager.Instance.Unregister<EnemyDiedEvent>(onEnemyDied);
+        EventManager.Instance.Fire(new EnemyDiedEvent(this));
+        Destroy(gameObject, 1.0f);
+    }
+
+    public void OnEnemyDied(GameEvent e)
+	{
+        GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.2f, 0.3f);
+        Debug.Log("SPEED UP!!");
+        moveSpeed++;
+	}
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
@@ -38,10 +58,8 @@ public class Square : BasicEnemy
     /*																						*/
     /*--------------------------------------------------------------------------------------*/
     override public void Update ()
-    {
-        SurroundTarget (player.transform);        
+    {       
         FollowTarget (player.transform);
-        SinWaveMovement ();
     }
 }
 }

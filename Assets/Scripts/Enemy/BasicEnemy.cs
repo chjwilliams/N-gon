@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine.Networking;
 using SimpleManager;
-using EnemyWaveManager_;
+using EnemyWaveSpawner;
+using GameEventManager;
+using GameEvents;
 
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
-/*	BasicEnemyControls: Handles baisc enemy state in N-gon								*/
+/*	BasicEnemy: Handles baisc enemy state in N-gon								        */
 /*			Functions:																	*/
 /*					public:																*/
 /*						BasicEnemyControls ()											*/
@@ -29,9 +31,10 @@ namespace Enemy
  public enum EnemyType
 {
         Triangle,
-        Square
+        Square,
+        Pentagon
 }
-public class BasicEnemyControls : MonoBehaviour, IManaged
+public class BasicEnemy : MonoBehaviour, IManaged
 {
 
     public EnemyType EnemyTypes {get; private set;}
@@ -39,7 +42,7 @@ public class BasicEnemyControls : MonoBehaviour, IManaged
     //    Public Variables
     public int sides;                            //    Refernece to number of sides enemy has
     public float moveSpeed;                      //    Movement speed of enemy
-    public BasicEnemyControls thisEnemy;         //    A Referecence to self
+    public BasicEnemy thisEnemy;         //    A Referecence to self
     public LayerMask collisionMask;              //
     public AudioClip spawn;                      //    Audio clip played with spawned
     public AudioClip hit;                        //    Audio clip played when hit with plauer bullet
@@ -58,7 +61,7 @@ public class BasicEnemyControls : MonoBehaviour, IManaged
     /*	BasicEnemyControls: Empty Constructor                            					*/
     /*																						*/
     /*--------------------------------------------------------------------------------------*/
-    public BasicEnemyControls () { }
+    public BasicEnemy () { }
 
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
@@ -69,7 +72,7 @@ public class BasicEnemyControls : MonoBehaviour, IManaged
     {
         if (thisEnemy == null)
         {
-            thisEnemy = GetComponent <BasicEnemyControls> ();
+            thisEnemy = GetComponent <BasicEnemy> ();
         }
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer> ();
@@ -91,7 +94,12 @@ public class BasicEnemyControls : MonoBehaviour, IManaged
 
     public virtual void OnCreated() {}
 
-    public virtual void OnDestroyed() { Destroy(gameObject, 1.0f);}
+    public virtual void OnDestroyed()
+    {
+        EventManager.Instance.Fire(new EnemyDiedEvent(this));
+        
+        Destroy(gameObject, 1.0f);
+    }
 
     protected void FollowTarget (Transform target)
     {
@@ -156,7 +164,7 @@ public class BasicEnemyControls : MonoBehaviour, IManaged
     {
         if (other.gameObject.CompareTag ("Bullet"))
         {
-            moveSpeed = 40.0f;
+            moveSpeed = 20.0f;
             _MyManager.Destroy(this);
         }
     }

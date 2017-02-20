@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using SimpleManager;
 using Enemy;
+using GameEventManager;
+using GameEvents;
 
-namespace EnemyWaveManager_ 
+namespace EnemyWaveSpawner 
 {
- public class EnemyWaveManager : Manager<BasicEnemyControls>
+ public class EnemyWaveManager : Manager<BasicEnemy>
 {
         public const string TRIANGLE_PREFAB = "Triangle";
 		public const string SQUARE_PREFAB = "Square";
+        public const string PENTAGON_PREFAB = "Pentagon";
 
         public GameObject[] spawnPoints;
 		
@@ -20,14 +23,23 @@ namespace EnemyWaveManager_
         private static readonly Array EnemyTypes = Enum.GetValues(typeof(EnemyType));
         private readonly System.Random _rng = new System.Random();
 
+        void Start()
+        {
+            
+        }
+
 		public void PopulateDictionary()
 		{
+
             enemyPrefabs = new Dictionary<string, GameObject> ();
-			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + "Triangle");
+			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + TRIANGLE_PREFAB);
 			enemyPrefabs.Add(TRIANGLE_PREFAB,thisEnemy);
             thisEnemy =  null;
 			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + SQUARE_PREFAB);
 			enemyPrefabs.Add(SQUARE_PREFAB, thisEnemy);
+            thisEnemy =  null;
+			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + PENTAGON_PREFAB);
+			enemyPrefabs.Add(PENTAGON_PREFAB, thisEnemy);
 		}
 
         public static bool ListIsEmpty()
@@ -40,19 +52,19 @@ namespace EnemyWaveManager_
             spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint"); 
         }
 
-        public override BasicEnemyControls Create()
+        public override BasicEnemy Create()
         {
-            BasicEnemyControls enemy = Init(GetRandomEnemyType());
+            BasicEnemy enemy = Init(GetRandomEnemyType());
             
             ManagedObjects.Add(enemy);
             enemy.OnCreated();
             return enemy;
         }
 
-		public BasicEnemyControls Init(EnemyType enemyType)
+		public BasicEnemy Init(EnemyType enemyType)
 		{
 			GameObject newEnemy = MonoBehaviour.Instantiate(enemyPrefabs[enemyType.ToString()], spawnPoints[_rng.Next() % spawnPoints.Length].transform.position, Quaternion.identity) as GameObject;
-			BasicEnemyControls enemy = new BasicEnemyControls();
+			BasicEnemy enemy = new BasicEnemy();
 			switch (enemyType.ToString())
 			{
 				case TRIANGLE_PREFAB:
@@ -63,23 +75,31 @@ namespace EnemyWaveManager_
 					newEnemy.AddComponent <Square> ();
 					enemy = newEnemy.GetComponent <Square> ();
 					break;
+                case PENTAGON_PREFAB:
+					newEnemy.AddComponent <Pentagon> ();
+					enemy = newEnemy.GetComponent <Pentagon> ();
+					break;
 			}
 
 			return enemy;
 		}
 
-        public override void Destroy(BasicEnemyControls enemy)
+        public override void Destroy(BasicEnemy enemy)
         {
-            Debug.Log("Before Removing: " + ManagedObjects.Count);
             ManagedObjects.Remove(enemy);
-            Debug.Log("After Removing: " + ManagedObjects.Count);
+
+            if(ManagedObjects.Count < 1)
+            {
+                EventManager.Instance.Fire(new EnemyWaveDestroyedEvent(this));
+            }
+
             enemy.GetComponent<SpriteRenderer>().color = new Color (0, 0, 0, 0);
             enemy.OnDestroyed();
         }
 
-        public List<BasicEnemyControls> Create(uint n)
+        public List<BasicEnemy> Create(uint n)
         {
-            List<BasicEnemyControls> enemy = new List<BasicEnemyControls>();
+            List<BasicEnemy> enemy = new List<BasicEnemy>();
             for (var i = 0; i < n; i++)
             {
                 enemy.Add(Create());
