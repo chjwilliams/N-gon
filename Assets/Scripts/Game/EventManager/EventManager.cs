@@ -4,11 +4,9 @@ using UnityEngine;
 using System;
 using GameEvents;
 
-
-
-namespace GameEventManager
+namespace GameEventsManager
  {
-
+     
    public class EventManager 
    {
 

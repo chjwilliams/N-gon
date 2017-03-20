@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Enemy;
 using EnemyWaveSpawner;
+using GameTasks;
+using GameTaskManager;
 
 namespace GameEvents
 {
@@ -27,6 +29,25 @@ namespace GameEvents
 	    public EnemyDiedEvent(BasicEnemy enemy) 
 	    {
             this.enemy = enemy;
+        }
+    }
+
+    public class SpawnEnemyBossEvent : GameEvent
+    {
+        public readonly BasicEnemyBoss boss;
+        public SpawnEnemyBossEvent(BasicEnemyBoss b)
+        {
+            boss = b;
+        }
+    }
+
+    public class EnemyBossDamagedEvent : GameEvent
+    {
+        public readonly BasicEnemyBoss boss;
+
+        public EnemyBossDamagedEvent(BasicEnemyBoss b)
+        {
+            boss = b;
         }
     }
 

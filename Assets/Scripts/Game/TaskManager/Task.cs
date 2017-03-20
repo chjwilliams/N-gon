@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
-namespace SimpleTask
+namespace GameTasks
 {
 	public enum TaskStatus : byte
 	{

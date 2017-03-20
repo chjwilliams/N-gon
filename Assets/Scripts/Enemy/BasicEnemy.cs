@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine.Networking;
-using SimpleManager;
+using BasicManager;
 using EnemyWaveSpawner;
-using GameEventManager;
+using GameEventsManager;
 using GameEvents;
 
 /*--------------------------------------------------------------------------------------*/
@@ -32,7 +32,8 @@ namespace Enemy
 {
         Triangle,
         Square,
-        Pentagon
+        Pentagon,
+        BasicBoss
 }
 public class BasicEnemy : MonoBehaviour, IManaged
 {
@@ -42,18 +43,17 @@ public class BasicEnemy : MonoBehaviour, IManaged
     //    Public Variables
     public int sides;                            //    Refernece to number of sides enemy has
     public float moveSpeed;                      //    Movement speed of enemy
-    public BasicEnemy thisEnemy;         //    A Referecence to self
     public LayerMask collisionMask;              //
     public AudioClip spawn;                      //    Audio clip played with spawned
     public AudioClip hit;                        //    Audio clip played when hit with plauer bullet
 
-    //    Private Variables
-    private float _Width;						 //	   Reference to player's width
-    private float _Height;						 //	   Refernece to player's height
-    private Vector3 _Position;                   //    Reference to position
-    private AudioSource _AudioSource;            //    Refernce to gameobject's audio source
-    private Animator _Animator;                  //    Reference to Enemy's animator
-    private Rigidbody2D _Rigidbody2D;            //    Reference to Rigidbody2D
+    //    Protected Variables
+    protected float _Width;						 //	   Reference to player's width
+    protected float _Height;						 //	   Refernece to player's height
+    protected Vector3 _Position;                   //    Reference to position
+    protected AudioSource _AudioSource;            //    Refernce to gameobject's audio source
+    protected Animator _Animator;                  //    Reference to Enemy's animator
+    protected Rigidbody2D _Rigidbody2D;            //    Reference to Rigidbody2D
     private EnemyWaveManager _MyManager;
 
     /*--------------------------------------------------------------------------------------*/
@@ -70,10 +70,6 @@ public class BasicEnemy : MonoBehaviour, IManaged
     /*--------------------------------------------------------------------------------------*/
     public virtual void Start ()
     {
-        if (thisEnemy == null)
-        {
-            thisEnemy = GetComponent <BasicEnemy> ();
-        }
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer> ();
 
@@ -162,7 +158,7 @@ public class BasicEnemy : MonoBehaviour, IManaged
     /*--------------------------------------------------------------------------------------*/
     protected virtual void OnCollisionEnter2D (Collision2D other)
     {
-        if (other.gameObject.CompareTag ("Bullet"))
+        if (other.gameObject.CompareTag ("PlayerBullet"))
         {
             moveSpeed = 20.0f;
             _MyManager.Destroy(this);

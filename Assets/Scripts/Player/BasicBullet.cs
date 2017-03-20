@@ -57,15 +57,27 @@ public class BasicBullet : MonoBehaviour
 	/*--------------------------------------------------------------------------------------*/
 	void OnCollisionEnter2D(Collision2D other)
 	{
-		if (other.gameObject.tag == "Player")
+		if (other.gameObject.tag == "Player" && gameObject.tag == "PlayerBullet")
 		{
 			Physics2D.IgnoreCollision (GetComponent<BoxCollider2D>(), _Player.GetComponent<CircleCollider2D> ());
 		}
 
-		if (other.gameObject.tag == "Boundary" || other.gameObject.tag == "Enemy")
+		if ((other.gameObject.tag == "Boundary" || other.gameObject.tag == "Enemy" || other.gameObject.tag == "EnemyBoss") && tag == "PlayerBullet")
 		{
 			Destroy (gameObject);
 		}
+
+		if (gameObject.tag == "EnemyBullet" && other.gameObject.tag == "Boundary")
+		{
+			Destroy(gameObject);
+		}
+
+		if (gameObject.tag == "EnemyBullet" && other.gameObject.tag == "EnemyBoss")
+		{
+			Physics2D.IgnoreCollision (GetComponent<BoxCollider2D>(), other.gameObject.GetComponent<Collider2D>());
+		}
+
+		
 	}
 
 	

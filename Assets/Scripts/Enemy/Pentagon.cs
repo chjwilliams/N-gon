@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameEventManager;
+using GameEventsManager;
 using GameEvents;
 
 /*--------------------------------------------------------------------------------------*/
@@ -47,7 +47,8 @@ public class Pentagon : BasicEnemy
     public void OnEnemyDied(GameEvent e)
 	{
         GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.2f, 0.3f);
-        Debug.Log("SPEED UP!!");
+        GetComponent<TrailRenderer>().startColor = new Color (1.0f, 0.2f, 0.3f);
+        GetComponent<TrailRenderer>().endColor = new Color (1.0f, 0.2f, 0.3f);
         moveSpeed++;
 	}
 

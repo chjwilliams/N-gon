@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SimpleManager
+namespace BasicManager
 {
     
     // BASE CLASSES

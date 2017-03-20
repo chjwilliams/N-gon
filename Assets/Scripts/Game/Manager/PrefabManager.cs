@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+namespace GamePrefabs
+{
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
 /*	PrefabManager: Manages prefabs when they are destroyed								*/
@@ -32,5 +34,5 @@ public class PrefabManager : MonoBehaviour
 			return m_Instance;
 		}
 	}
-
+}
 }

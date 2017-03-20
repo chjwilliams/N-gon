@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SimpleManager;
+using BasicManager;
 using EnemyWaveSpawner;
-using GameEventManager;
+using GameEventsManager;
 using GameEvents;
+using Enemy;
 
 /*
         TODO: Audio: Each enemy type should play different sounds when they are created and destroyed.
@@ -32,6 +33,8 @@ public class GameManager : MonoBehaviour
     //  Static variables
     public static GameManager instance;                //   The current Game Manager  
     public EnemyWaveManager enemyWaveManager;
+
+    private BasicEnemyBoss boss;
     private EnemyWaveDestroyedEvent.Handler onEnemyWaveDestroyed;
 	private const string ENEMY_WAVE_DESTROYED = "EnemyWaveDestroyed";
 
@@ -42,15 +45,24 @@ public class GameManager : MonoBehaviour
     /*--------------------------------------------------------------------------------------*/
     private void Awake ()
 	{
-        enemyWaveManager = new EnemyWaveManager();
-        enemyWaveManager.PopulateSpawnPoints();
-        enemyWaveManager.PopulateDictionary();
-        onEnemyWaveDestroyed = new EnemyWaveDestroyedEvent.Handler(OnEnemyWaveDestroyed);
-		EventManager.Instance.Register<EnemyWaveDestroyedEvent>(onEnemyWaveDestroyed);
+        
+       
 	}
 
     private void Start()
     {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+     
+        enemyWaveManager = new EnemyWaveManager();
+        enemyWaveManager.PopulateSpawnPoints();
+        enemyWaveManager.PopulateDictionary();
+
+        onEnemyWaveDestroyed = new EnemyWaveDestroyedEvent.Handler(OnEnemyWaveDestroyed);
+		EventManager.Instance.Register<EnemyWaveDestroyedEvent>(onEnemyWaveDestroyed);
         enemyWaveManager.Create(5);
     }
 	
@@ -59,6 +71,11 @@ public class GameManager : MonoBehaviour
         enemyWaveManager.Create(5);
 	}
 
+    public void SpawnAtEnemies(uint number, Transform t)
+    {
+        enemyWaveManager.CreateNAtLocation(number, t);
+    }
+
     /*--------------------------------------------------------------------------------------*/
     /*																						*/
     /*	Update: Called once per frame														*/
@@ -66,6 +83,6 @@ public class GameManager : MonoBehaviour
     /*--------------------------------------------------------------------------------------*/
     void Update ()
 	{
-		
+
 	}
 }

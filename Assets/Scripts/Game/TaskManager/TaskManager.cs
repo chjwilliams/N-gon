@@ -1,60 +1,64 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SimpleTask;
+using GameTasks;
 
-public class TaskManager : MonoBehaviour 
+namespace GameTaskManager
 {
-
-	private readonly List<Task> _tasks = new List<Task>();	
-	// Use this for initialization
-	void Start () 
+	public class TaskManager : MonoBehaviour 
 	{
-		
-	}
-
-	public void AddTask(Task task)
-	{
-		Debug.Assert(task != null);
-
-		Debug.Assert(!task.IsAttached);
-		_tasks.Add(task);
-		task.SetStatus(TaskStatus.Pending);
-	}
-
-	private void HandleCompletion(Task task, int taskIndex)
-	{
-		if (task.NextTask != null && task.isSuccessful)
+		private readonly List<Task> _tasks = new List<Task>();	
+		// Use this for initialization
+		void Start () 
 		{
-			AddTask(task.NextTask);
+		
 		}
 
-		_tasks.RemoveAt(taskIndex);
-		task.SetStatus(TaskStatus.Detached);
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		for (int i  = _tasks.Count - 1; i >= 0; i--)
+		public void AddTask(Task task)
 		{
-			Task task = _tasks[i];
+			Debug.Assert(task != null);
+			Debug.Assert(!task.IsAttached);
 
-			if (task.IsPending)
-			{
-				task.SetStatus(TaskStatus.Working);
-			}
+			_tasks.Add(task);
 
-			if (task.IsFinished)
+			task.SetStatus(TaskStatus.Pending);
+		}
+
+		private void HandleCompletion(Task task, int taskIndex)
+		{
+			if (task.NextTask != null && task.isSuccessful)
 			{
-				HandleCompletion(task, i);
-			}
-			else
+				AddTask(task.NextTask);
+			}	
+
+			_tasks.RemoveAt(taskIndex);
+			task.SetStatus(TaskStatus.Detached);
+		}
+
+		// Update is called once per frame
+		public void Update () 
+		{
+			Task task;
+
+			for (int i  = _tasks.Count - 1; i >= 0; i--)
 			{
-				task.Update();
+				task = _tasks[i];
+
+				if (task.IsPending)
+				{
+					task.SetStatus(TaskStatus.Working);
+				}
 				if (task.IsFinished)
 				{
-					HandleCompletion(task,i);
+					HandleCompletion(task, i);
+				}
+				else
+				{
+					task.Update();
+					if (task.IsFinished)
+					{
+						HandleCompletion(task,i);
+					}
 				}
 			}
 		}
