@@ -14,6 +14,7 @@ namespace EnemyWaveSpawner
         public const string TRIANGLE_PREFAB = "Triangle";
 		public const string SQUARE_PREFAB = "Square";
         public const string PENTAGON_PREFAB = "Pentagon";
+        public const string HEXAGON_PREFAB = "Hexagon";
         public const string BASIC_BOSS_PREFAB = "BasicBoss";
 
         public GameObject[] spawnPoints;
@@ -46,6 +47,9 @@ namespace EnemyWaveSpawner
             thisEnemy =  null;
 			thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + PENTAGON_PREFAB);
 			enemyPrefabs.Add(PENTAGON_PREFAB, thisEnemy);
+            thisEnemy = null;
+            thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + HEXAGON_PREFAB);
+			enemyPrefabs.Add(HEXAGON_PREFAB, thisEnemy);
             thisEnemy = null;
             thisEnemy = (GameObject)Resources.Load<GameObject>("Prefabs/" + BASIC_BOSS_PREFAB);
 			enemyPrefabs.Add(BASIC_BOSS_PREFAB, thisEnemy);
@@ -97,9 +101,13 @@ namespace EnemyWaveSpawner
 				    	newEnemy.AddComponent <Square> ();
 				    	enemy = newEnemy.GetComponent <Square> ();
 				    	break;
-                  case PENTAGON_PREFAB:
+                    case PENTAGON_PREFAB:
 				    	newEnemy.AddComponent <Pentagon> ();
 				    	enemy = newEnemy.GetComponent <Pentagon> ();
+				    	break;
+                    case HEXAGON_PREFAB:
+				    	newEnemy.AddComponent <Hexagon> ();
+				    	enemy = newEnemy.GetComponent <Hexagon> ();
 				    	break;
 			    }
             }
@@ -125,9 +133,13 @@ namespace EnemyWaveSpawner
 				    	newEnemy.AddComponent <Square> ();
 				    	enemy = newEnemy.GetComponent <Square> ();
 				    	break;
-                  case PENTAGON_PREFAB:
+                    case PENTAGON_PREFAB:
 				    	newEnemy.AddComponent <Pentagon> ();
 				    	enemy = newEnemy.GetComponent <Pentagon> ();
+				    	break;
+                    case HEXAGON_PREFAB:
+				    	newEnemy.AddComponent <Hexagon> ();
+				    	enemy = newEnemy.GetComponent <Hexagon> ();
 				    	break;
 			    }
             }

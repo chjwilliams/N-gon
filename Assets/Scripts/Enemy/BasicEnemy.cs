@@ -33,6 +33,7 @@ namespace Enemy
         Triangle,
         Square,
         Pentagon,
+        Hexagon,
         BasicBoss
 }
 public class BasicEnemy : MonoBehaviour, IManaged
@@ -97,10 +98,10 @@ public class BasicEnemy : MonoBehaviour, IManaged
         Destroy(gameObject, 1.0f);
     }
 
-    protected void FollowTarget (Transform target)
+    public void FollowTarget (Transform target)
     {
         _Position = transform.localPosition;
-        _Position = Vector3.Lerp (_Position, target.localPosition, Time.deltaTime);
+        _Position = Vector3.Lerp (_Position, target.localPosition, Time.deltaTime * moveSpeed);
         transform.localPosition = _Position;
     }
 

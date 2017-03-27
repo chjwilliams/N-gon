@@ -13,6 +13,7 @@ namespace GameTasks
 		private Vector3 currentSize;
 		private float growthRate = 1.1f;
 		private Vector3 MAX_SIZE = Vector3.one;
+		
 		public AppearTask(BasicEnemyBoss b)
 		{
 			boss = b;

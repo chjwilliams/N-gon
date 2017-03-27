@@ -59,4 +59,14 @@ namespace GameEvents
             this.enemyWaveManager = enemyWaveManager;
         }
     }
+
+    public class EnemyFleeEvent : GameEvent
+    {
+        public readonly BasicEnemy enemy;
+
+        public EnemyFleeEvent(BasicEnemy thisEnemy)
+        {
+            enemy = thisEnemy;
+        }
+    }
 }
