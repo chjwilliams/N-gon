@@ -94,7 +94,8 @@ namespace BehaviorNodes
 			enemy.preparingToAttack = false;
 			enemy.isAttacking = false;
 
-			if (Vector3.Distance(enemy.transform.position, enemy.fleeingPosition) < enemy.safetyDistance)
+			Debug.Log("Flee");
+			if (Vector3.Distance(enemy.transform.position, enemy.fleeingPosition) > enemy.safetyDistance)
 			{
 				enemy.transform.position = Vector3.Lerp(enemy.transform.position, enemy.fleeingPosition, enemy.fleeTimer);
 			}

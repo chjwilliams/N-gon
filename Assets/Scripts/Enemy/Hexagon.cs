@@ -47,32 +47,38 @@ namespace Enemy
 			numberOfPulses = 0;
 			base.Start();
 
-			_tree = new Tree<Hexagon>(new Selector<Hexagon>(
-				//	Flee
-				new Sequence<Hexagon>(
-					new Not<Hexagon>(new DoneAttackPrep()),
-					new IsDamaged(),
-					new FleeingBehavior()
-				),
-				//	Attack
-				new Sequence<Hexagon>(
-					new PlayerIsInRange(),
-					new DoneAttackPrep(),
-					new AttackingBehavior()
-				),
-				//	Attack Prep 
-				new Sequence<Hexagon>(
-					new PlayerIsInRange(),
-					new Not<Hexagon>(new DoneAttackPrep()),
-					new AttackPreperaionBehavior()
-				),
-				//	Seek
-				new Sequence<Hexagon>(
-					new Not<Hexagon>(new PlayerIsInRange()),
-					new SeekingBehavior()
+			_tree = new Tree<Hexagon>
+			(
+				new Selector<Hexagon>
+				(
+					//	Flee
+					new Sequence<Hexagon>
+					(
+						new Not<Hexagon>(new DoneAttackPrep()),
+						new IsDamaged(),
+						new FleeingBehavior()
+					),
+					//	Attack
+					new Sequence<Hexagon>
+					(
+						new PlayerIsInRange(),
+						new DoneAttackPrep(),
+						new AttackingBehavior()
+					),
+					//	Attack Prep 
+					new Sequence<Hexagon>
+					(
+						new PlayerIsInRange(),
+						new Not<Hexagon>(new DoneAttackPrep()),
+						new AttackPreperaionBehavior()
+					),
+					//	Seek
+					new Sequence<Hexagon>
+					(
+						new Not<Hexagon>(new PlayerIsInRange()),
+						new SeekingBehavior()
+					)
 				)
-			)
-
 			);
 			//stateMachine = new FiniteStateMachine<Hexagon>(this);
 			//stateMachine.TransitionTo<SeekingState>();
@@ -90,6 +96,7 @@ namespace Enemy
 			fleeingPosition = player.position + (fleeingDirection * safetyDistance);
 
 			fleeTimer = Vector3.Distance(initalFleeingPosition, fleeingPosition) / moveSpeed;
+
 		}
 		
 		// Update is called once per frame
@@ -109,16 +116,23 @@ namespace Enemy
 
 			if (other.gameObject.CompareTag("PlayerBullet"))
 			{
-				hasBeenDamaged = true;
+				
 				health--;
-				hasBeenDamaged = false;
+				
 				if(preparingToAttack)
 				{
 					Flee(transform.position);
-					//	Function to generate random position
+					StartCoroutine(FleeCoolDown());
 					//	GameEventsManager.EventManager.Instance.Fire(new EnemyFleeEvent(this));
 				}
 			}
+		}
+
+		IEnumerator FleeCoolDown()
+		{
+			hasBeenDamaged = true;
+			yield return new WaitForSeconds(0.5f);
+			hasBeenDamaged = false;
 		}
 	}
 }
