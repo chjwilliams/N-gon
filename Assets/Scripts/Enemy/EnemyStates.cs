@@ -5,6 +5,7 @@ using GameEvents;
 using GameEventsManager;
 using GC;
 using Enemy;
+using StateMachine;
 
 namespace BasicEnemyStates
 {
@@ -15,26 +16,23 @@ namespace BasicEnemyStates
 
 	public class SeekingState : FiniteStateMachine<Hexagon>.State
 	{
-
-
 		 private Transform target;
-		 private float inAttackRange = 4.0f;
+		 private float seekingMoveSpeed = 0.2f;
 
 		 public override void Init()
 		 {
 			target = GameObject.FindGameObjectWithTag("Player").transform;
-			Context.moveSpeed = 0.2f;
 		 }
 
 		 public override void OnEnter()
 		 {
-			 Context.moveSpeed = 0.2f;
+			 Context.moveSpeed = seekingMoveSpeed;
 		 }
 
 		 public override void Update()
 		 {
 			 Context.FollowTarget(target);
-			 if(Vector3.Distance(Context.transform.position, target.position) < inAttackRange)
+			 if(Context.GetDistanceFromPoint(target.position) < Context.enemySight)
 			 {
 				TransitionTo<AttackPrepState>();
 			 }
@@ -43,12 +41,6 @@ namespace BasicEnemyStates
 
 	public class AttackPrepState : FiniteStateMachine<Hexagon>.State
 	{
-		/*
-			Attack Preparation: Enemy stops moving and pulses 5 times. If it is 
-						hit while pulsing it will enter the fleeing state. 
-						If not, it will enter the attack state. 
-		*/
-
 		private Vector3 initalScale;
 		private float timeSincePulseStart;
 		private int maxNumberOfPulses = 5;
@@ -72,15 +64,15 @@ namespace BasicEnemyStates
 
 			if (timeSincePulseStart <= Context.pulseTimer)
             {
-                Context.gameObject.transform.localScale = Vector3.Lerp(initalScale, Context.maxSize * initalScale, Easing.QuadEaseOut(timeSincePulseStart / Context.pulseTimer));
-                timeSincePulseStart += Time.deltaTime;
+                //Context.gameObject.transform.localScale = Vector3.Lerp(initalScale, Context.maxSize * initalScale, Easing.QuadEaseOut(timeSincePulseStart / Context.pulseTimer));
+                Context.PulseEnemy(initalScale, Context.maxSize, timeSincePulseStart, Context.pulseTimer);
+				timeSincePulseStart += Time.deltaTime;
             }
 			else
 			{
 				Context.numberOfPulses++;
 				timeSincePulseStart = 0.0f;
 			}
-
 
 			if(Context.numberOfPulses >= maxNumberOfPulses)
 			{
@@ -101,13 +93,8 @@ namespace BasicEnemyStates
 
 	public class AttackState : FiniteStateMachine<Hexagon>.State
 	{
-		/*
-			Attack: Enemy moves quickly in a straight line towards the player for 
-			X distance. If it hits the player it will explode for Y damage. 
-			Otherwise it will enter the seeking state.		
-		 */
-		Transform target;
-		Vector3 initalAttackPosition;
+		private Transform target;
+		private Vector3 initalAttackPosition;
 		private float attackTimer;
 		public override void OnEnter()
 		{
@@ -117,25 +104,17 @@ namespace BasicEnemyStates
 			Context.moveSpeed = 2.0f;
 
 			attackTimer = Vector3.Distance(initalAttackPosition, target.position) / (Context.moveSpeed * 0.5f);
-
 		}
 
 		public override void Update()
 		{
-			if(Context.transform == target)
+			if(Vector3.Distance(initalAttackPosition, target.position) < Context.attackRange)
 			{
-				TransitionTo<SeekingState>();
+				Context.transform.position = Vector3.Lerp(Context.transform.position, target.position, attackTimer);
 			}
 			else
 			{
-				if(Vector3.Distance(initalAttackPosition, target.position) < Context.attackRange)
-				{
-					Context.transform.position = Vector3.Lerp(Context.transform.position, target.position, attackTimer);
-				}
-				else
-				{
-					TransitionTo<SeekingState>();
-				}
+				TransitionTo<SeekingState>();
 			}
 		}
 
@@ -148,13 +127,6 @@ namespace BasicEnemyStates
 
 	public class FleeingState : FiniteStateMachine<Hexagon>.State
 	{
-		/*
-
-			Fleeing: 	Enemy picks a random position X distance away from player and 
-						moves quickly towards it. When it reaches the position it 
-						enters the seeking state
- 		*/
-
 		 private float fleeTimer;
 		 private Vector3 fleeingPosition;
 		 private Vector3 initalFleeingPosition;
@@ -175,7 +147,7 @@ namespace BasicEnemyStates
 
 		public override void Update()
 		{
-			if (Vector3.Distance(initalFleeingPosition, fleeingPosition) < Context.safetyDistance)
+			if (Vector3.Distance(Context.transform.position, fleeingPosition) < Context.safetyDistance)
 			{
 				Context.transform.position = Vector3.Lerp(Context.transform.position, fleeingPosition, fleeTimer);
 			}

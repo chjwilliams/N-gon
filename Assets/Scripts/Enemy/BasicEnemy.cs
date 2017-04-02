@@ -7,6 +7,7 @@ using BasicManager;
 using EnemyWaveSpawner;
 using GameEventsManager;
 using GameEvents;
+using GC;
 
 /*--------------------------------------------------------------------------------------*/
 /*																						*/
@@ -44,9 +45,22 @@ public class BasicEnemy : MonoBehaviour, IManaged
     //    Public Variables
     public int sides;                            //    Refernece to number of sides enemy has
     public float moveSpeed;                      //    Movement speed of enemy
+    public int MAX_NUMBER_OF_PULSES = 5;
+	public bool hasBeenDamaged;
+	public bool isAttacking;
+	public bool preparingToAttack;		
+	public float enemySight;
+	public float pulseTimer;
+	public float fleeTimer;
+	public float maxSize;
+	public float attackRange;
+	public float safetyDistance;
+	public int numberOfPulses;
+	public Vector3 fleeingPosition; 
     public LayerMask collisionMask;              //
     public AudioClip spawn;                      //    Audio clip played with spawned
     public AudioClip hit;                        //    Audio clip played when hit with plauer bullet
+    public Transform player;
 
     //    Protected Variables
     protected float _Width;						 //	   Reference to player's width
@@ -77,6 +91,8 @@ public class BasicEnemy : MonoBehaviour, IManaged
         _Width = spriteRenderer.bounds.extents.x;
         _Height = spriteRenderer.bounds.extents.y;
 
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+
         _Position = transform.position;
         _AudioSource = GetComponent <AudioSource> ();
         _Animator = GetComponent <Animator> ();
@@ -86,7 +102,6 @@ public class BasicEnemy : MonoBehaviour, IManaged
 
     public virtual void Init(EnemyType enemy) 
     {   
-        
     }
 
     public virtual void OnCreated() {}
@@ -98,11 +113,21 @@ public class BasicEnemy : MonoBehaviour, IManaged
         Destroy(gameObject, 1.0f);
     }
 
+    public float GetDistanceFromPoint(Vector3 point)
+    {
+        return Vector3.Distance(transform.position, point);
+    }
+
     public void FollowTarget (Transform target)
     {
         _Position = transform.localPosition;
         _Position = Vector3.Lerp (_Position, target.localPosition, Time.deltaTime * moveSpeed);
         transform.localPosition = _Position;
+    }
+
+    public void PulseEnemy(Vector3 initalScale, float maxSize, float t, float pulseTimer)
+    {
+        transform.localScale = Vector3.Lerp(initalScale, maxSize * initalScale, Easing.QuadEaseOut(t / pulseTimer));
     }
 
     protected void SurroundTarget (Transform target)
