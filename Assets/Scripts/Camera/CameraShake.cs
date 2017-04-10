@@ -20,8 +20,10 @@ public class CameraShake : MonoBehaviour
 
 	//	Public Variables
 	public Camera mainCamera; 					//	Refernce to Main camera
-	public PlayerControls player;				//	Reference to player
+	public Transform target;					//	Reference to player
 	public float shakeAmount = 0;				//	How violent the shake is
+
+	public float nextTimeToSearch = 0;				//	How long unitl the camera searches for the target again
 
 	/*--------------------------------------------------------------------------------------*/
 	/*																						*/
@@ -40,7 +42,23 @@ public class CameraShake : MonoBehaviour
 			cameraShakeEffect = GameObject.FindGameObjectWithTag ("Camera").GetComponent<CameraShake> ();
 		}
 
-		player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerControls> ();
+		if (target == null)
+		{
+			FindPlayer();
+		}
+		//player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerControls> ();
+	}
+
+	void FindPlayer()
+	{
+		if (nextTimeToSearch <= Time.time)
+		{
+			GameObject result = GameObject.FindGameObjectWithTag ("Player");
+			if (result != null)
+				target = result.transform;
+
+			nextTimeToSearch = Time.time + 2.0f;
+		}
 	}
 
 	/*--------------------------------------------------------------------------------------*/
@@ -86,5 +104,14 @@ public class CameraShake : MonoBehaviour
 		CancelInvoke ("DoShake");
 		mainCamera.transform.localPosition = new Vector3(0, 0, -10);
 
-	}		
+	}	
+
+	void Update()
+	{
+		if (target == null)
+		{
+			FindPlayer ();
+			return;
+		}
+	}	
 }

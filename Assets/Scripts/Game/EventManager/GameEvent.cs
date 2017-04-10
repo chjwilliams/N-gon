@@ -69,4 +69,12 @@ namespace GameEvents
             enemy = thisEnemy;
         }
     }
+
+    public class EnemyBossDiedEvent : GameEvent
+    {
+        public EnemyBossDiedEvent()
+        {
+            
+        }
+    }
 }

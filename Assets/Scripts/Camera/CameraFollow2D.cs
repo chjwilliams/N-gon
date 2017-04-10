@@ -38,9 +38,14 @@ public class CameraFollow2D : MonoBehaviour
 	/*--------------------------------------------------------------------------------------*/
 	void Start () 
 	{
-		m_LastTargetPosition = target.position;
-		m_OffsetZ = (transform.position - target.position).z;
+		if (target != null)
+		{
+			m_LastTargetPosition = target.position;
+			m_OffsetZ = (transform.position - target.position).z;
+			
+		}
 		transform.parent = null;
+		
 	}
 
 	/*--------------------------------------------------------------------------------------*/
