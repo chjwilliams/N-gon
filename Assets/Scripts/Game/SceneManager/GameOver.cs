@@ -7,7 +7,6 @@ using GameEvents;
 
 public class GameOver : Scene<TransitionData> 
 {
-
 	private SpaceButtonDownEvent.Handler onSpaceDown;
 	internal override void OnEnter(TransitionData data)
 	{

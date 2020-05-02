@@ -21,19 +21,10 @@ public class Main : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0)) Services.Events.Fire(new MouseDownEvent(0));
-        if (Input.GetMouseButtonDown(1)) Services.Events.Fire(new MouseDownEvent(1));
-        if (Input.GetKeyDown(KeyCode.Space)) Services.Events.Fire(new SpaceButtonDownEvent(KeyCode.Space));
-    }
-}
-
-public class MouseDownEvent : GameEvent
-{
-    public readonly int button;
-
-    public MouseDownEvent(int button)
-    {
-        this.button = button;
+        if (Input.GetKeyDown(KeyCode.Space)) 
+        {
+            Services.Events.Fire(new SpaceButtonDownEvent(KeyCode.Space));
+        }
     }
 }
 

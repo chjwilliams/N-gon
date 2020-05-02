@@ -6,8 +6,6 @@ using GameEvents;
 using GameScenes;
 public class MainMenu : Scene<TransitionData> 
 {
-
-
 	private SpaceButtonDownEvent.Handler onSpaceDown;
 	internal override void OnEnter(TransitionData data)
 	{
